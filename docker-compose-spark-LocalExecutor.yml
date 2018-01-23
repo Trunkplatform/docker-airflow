@@ -1,0 +1,103 @@
+version: '2.1'
+services:
+    postgres:
+        image: postgres:9.6
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+
+    webserver:
+        image: ailohq/airflow
+        restart: always
+        depends_on:
+            - postgres
+        environment:
+            LOAD_EX: n
+            EXECUTOR: Local
+            AIRFLOW_CONN_SPARK_MASTER: spark://spark-master:7077
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+        ports:
+            - "8080:8080"
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+
+    spark-master:
+        image: paul-spark
+        hostname: master
+        ports: ['8081:8080']
+        environment:
+            SPARK_NO_DAEMONIZE: "true"
+            service_url: http://localhost:8081
+            github_client_key:
+            github_client_secret:
+            github_team_roles: trunk-core-team:dev, productionaccess:admin
+            github_organization: Trunkplatform
+            github_teams: trunk-core-team, productionaccess
+            global_session_timeout: 86400000
+            security_manager_cipher_key:
+            SPARK_DAEMON_JAVA_OPTS: |
+                -Dspark.ui.reverseProxy=true
+                -Dspark.ui.reverseProxyUrl=http://localhost:8081
+                -Dspark.ui.filters=org.apache.shiro.web.servlet.IniShiroFilter
+        command: /start-spark-master.sh
+
+    spark-slave-1:
+        container_name: spark-slave-1
+        hostname: slave1
+        depends_on:
+            - spark-master
+        image: paul-spark
+        environment:
+            SPARK_NO_DAEMONIZE: "true"
+            SPARK_WORKER_CORES: 4
+            SPARK_WORKER_MEMORY: 4g
+            SPARK_MASTER_URL: spark://spark-master:7077
+            SPARK_DAEMON_JAVA_OPTS: |
+                -Dspark.ui.reverseProxy=true
+                -Dspark.ui.reverseProxyUrl=http://localhost:8081
+        command: /start-spark-slave.sh
+
+    spark-slave-2:
+        container_name: spark-slave-2
+        hostname: slave2
+        depends_on:
+            - spark-master
+        image: paul-spark
+        environment:
+            SPARK_NO_DAEMONIZE: "true"
+            SPARK_WORKER_CORES: 4
+            SPARK_WORKER_MEMORY: 4g
+            SPARK_MASTER_URL: spark://spark-master:7077
+            SPARK_DAEMON_JAVA_OPTS: |
+              -Dspark.ui.reverseProxy=true
+              -Dspark.ui.reverseProxyUrl=http://localhost:8081
+        command: /start-spark-slave.sh
+
+    hdfs-namenode:
+        image: uhopper/hadoop-namenode
+        hostname: namenode
+        container_name: namenode
+        volumes:
+            - ./dfs/name:/hadoop/dfs/name
+        environment:
+            CLUSTER_NAME: hadoop
+        ports:
+            - 50070:50070
+            - 8020:8020
+
+    hdfs-datanode:
+        image: uhopper/hadoop-datanode
+        depends_on:
+            - hdfs-namenode
+        hostname: datanode
+        container_name: datanode
+        environment:
+            CORE_CONF_fs_defaultFS: hdfs://hdfs-namenode:8020
+        volumes:
+            - ./dfs/data:/hadoop/dfs/data
