@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  deploy:
+    image: 'ruby:2.4'
+    command: |
+      bash -c " \
+      curl -L 'http://j.mp/build-scripts' | tar xvz && \
+      cd scripts && \
+      bundle install --gemfile ./Gemfile --path /tmp/bundle/ && \
+      rake rancher:downtime_deploy[${RANCHER_SERVICE_NAME},${RANCHER_ENV},1.${GO_PIPELINE_COUNTER}]"
+    environment:
+      - GO_PIPELINE_COUNTER
+      - RANCHER_ACCESS_KEY
+      - RANCHER_SECRET_KEY
+      - RANCHER_ENV
+      - RANCHER_SERVICE_NAME
