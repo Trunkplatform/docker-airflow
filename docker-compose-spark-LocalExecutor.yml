@@ -82,6 +82,7 @@ services:
             - ./volumes/dfs/name:/hadoop/dfs/name
         environment:
             CLUSTER_NAME: hadoop
+            HDFS_CONF_dfs_permissions: "false"
         ports:
             - 50070:50070
             - 8020:8020
@@ -94,5 +95,6 @@ services:
         container_name: datanode
         environment:
             CORE_CONF_fs_defaultFS: hdfs://hdfs-namenode:8020
+            HDFS_CONF_dfs_permissions: "false"
         volumes:
             - ./volumes/dfs/data:/hadoop/dfs/data
