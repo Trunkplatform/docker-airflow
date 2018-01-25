@@ -8,16 +8,18 @@ services:
             - POSTGRES_DB=airflow
 
     webserver:
-        image: ailohq/airflow
+        image: ailohq/airflow-pyspark:1.11
         restart: always
         depends_on:
             - postgres
         environment:
+            PROJECT_HOME:
             LOAD_EX: n
             EXECUTOR: Local
             AIRFLOW_CONN_SPARK_MASTER: spark://spark-master:7077
         volumes:
-            - ./dags:/usr/local/airflow/dags
+            - ${PROJECT_HOME}/dags:/usr/local/airflow/dags
+            - ${PROJECT_HOME}/scripts:/usr/local/airflow/scripts
         ports:
             - "8080:8080"
         command: webserver
@@ -28,31 +30,24 @@ services:
             retries: 3
 
     spark-master:
-        image: paul-spark
+        image: ailohq/zeppelin-pyspark:1.40
         hostname: master
         ports: ['8081:8080']
         environment:
             SPARK_NO_DAEMONIZE: "true"
             service_url: http://localhost:8081
-            github_client_key:
-            github_client_secret:
-            github_team_roles: trunk-core-team:dev, productionaccess:admin
-            github_organization: Trunkplatform
-            github_teams: trunk-core-team, productionaccess
-            global_session_timeout: 86400000
-            security_manager_cipher_key:
             SPARK_DAEMON_JAVA_OPTS: |
                 -Dspark.ui.reverseProxy=true
                 -Dspark.ui.reverseProxyUrl=http://localhost:8081
-                -Dspark.ui.filters=org.apache.shiro.web.servlet.IniShiroFilter
-        command: /start-spark-master.sh
+        command: |
+            /bin/bash -c "$${SPARK_HOME}/sbin/start-master.sh"
 
     spark-slave-1:
         container_name: spark-slave-1
         hostname: slave1
         depends_on:
             - spark-master
-        image: paul-spark
+        image: ailohq/zeppelin-pyspark:1.40
         environment:
             SPARK_NO_DAEMONIZE: "true"
             SPARK_WORKER_CORES: 4
@@ -68,7 +63,7 @@ services:
         hostname: slave2
         depends_on:
             - spark-master
-        image: paul-spark
+        image: ailohq/zeppelin-pyspark:1.40
         environment:
             SPARK_NO_DAEMONIZE: "true"
             SPARK_WORKER_CORES: 4
@@ -84,7 +79,7 @@ services:
         hostname: namenode
         container_name: namenode
         volumes:
-            - ./dfs/name:/hadoop/dfs/name
+            - ./volumes/dfs/name:/hadoop/dfs/name
         environment:
             CLUSTER_NAME: hadoop
         ports:
@@ -100,4 +95,4 @@ services:
         environment:
             CORE_CONF_fs_defaultFS: hdfs://hdfs-namenode:8020
         volumes:
-            - ./dfs/data:/hadoop/dfs/data
+            - ./volumes/dfs/data:/hadoop/dfs/data

@@ -28,3 +28,9 @@ __pycache__
 ### IntelliJ Idea ###
 .idea
 *.iml
+
+### build artifacts
+libs
+
+### mounted volumes
+volumes
