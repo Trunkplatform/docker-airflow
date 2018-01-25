@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# set PROJECT_HOME to any airflow project home directory
 export PROJECT_HOME=${PROJECT_HOME:-$(pwd)}
 echo "PROJECT_HOME is set to: $PROJECT_HOME"
 docker-compose -f docker-compose-spark-LocalExecutor.yml up
