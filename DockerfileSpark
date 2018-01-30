@@ -31,10 +31,11 @@ RUN apt-get update && \
     apt-get install -y bzip2 wget git apt-utils curl rsync netcat locales build-essential && \
     sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen && \
     locale-gen && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 && \
-    useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow
+    useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow &&\
+    mkdir $AIRFLOW_HOME/libs &&\
+    curl -o $AIRFLOW_HOME/libs/postgresql-9.4-1202.jdbc41.jar https://jdbc.postgresql.org/download/postgresql-9.4-1202.jdbc41.jar
 
 ADD https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh miniconda3.sh
-ADD https://jdbc.postgresql.org/download/postgresql-9.4-1202.jdbc41.jar /usr/local/airflow/libs
 
 RUN bash miniconda3.sh -p $CONDA_HOME -b && rm miniconda3.sh
 ENV PATH=${CONDA_HOME}/bin:${PATH}
