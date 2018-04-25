@@ -24,6 +24,20 @@ export \
   AIRFLOW__CORE__LOAD_EXAMPLES \
   AIRFLOW__CORE__SQL_ALCHEMY_CONN \
 
+# setup pip credentials
+mkdir ~/.pip
+
+cat <<EOF > ~/.pip/pip.conf
+[global]
+extra-index-url = $PYPI_EXTRA_INDEX_URL
+trusted-host = $PYPI_TRUSTED_HOST
+EOF
+
+# Install custom python package if PIP_OPTIONS is set
+if [ -n "$PIP_OPTIONS" ]; then
+    $(which pip) install --user $PIP_OPTIONS
+fi
+
 
 # Load DAGs exemples (default: Yes)
 if [[ -z "$AIRFLOW__CORE__LOAD_EXAMPLES" && "${LOAD_EX:=n}" == n ]]
@@ -34,11 +48,6 @@ fi
 # Install custom python package if requirements.txt is present
 if [ -e "/requirements.txt" ]; then
     $(which pip) install --user -r /requirements.txt
-fi
-
-# Install custom python package if PIP_OPTIONS is set
-if [ -n "$PIP_OPTIONS" ]; then
-    $(which pip) install --user $PIP_OPTIONS
 fi
 
 if [ -n "$REDIS_PASSWORD" ]; then
