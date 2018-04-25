@@ -47,10 +47,8 @@ RUN pip install Cython pytz pyOpenSSL ndg-httpsclient pyasn1 \
     apache-airflow[crypto,celery,postgres,hive,jdbc]==$AIRFLOW_VERSION \
     celery[redis]==4.0.2
 
-COPY libs /libs
 COPY requirements.txt /requirements.txt
 
-RUN pip install --no-cache /libs/*.tar.gz
 RUN pip install --no-cache -r /requirements.txt
 RUN rm -rf /root/.cache && apt-get autoclean && apt-get clean
 
