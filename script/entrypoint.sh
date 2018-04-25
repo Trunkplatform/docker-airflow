@@ -36,6 +36,11 @@ if [ -e "/requirements.txt" ]; then
     $(which pip) install --user -r /requirements.txt
 fi
 
+# Install custom python package if PIP_OPTIONS is set
+if [ -n "$PIP_OPTIONS" ]; then
+    $(which pip) install --user $PIP_OPTIONS
+fi
+
 if [ -n "$REDIS_PASSWORD" ]; then
     REDIS_PREFIX=:${REDIS_PASSWORD}@
 else
