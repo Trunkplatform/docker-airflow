@@ -5,8 +5,19 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 # FROM python:3.6-slim
-FROM gettyimages/spark:2.2.0-hadoop-2.7
+FROM bde2020/spark-base:2.2.0-hadoop2.7
 MAINTAINER Puckel_
+
+ENV SPARK_VERSION=2.2.0
+ENV SPARK_HOME=/usr/spark-$SPARK_VERSION
+RUN mv /spark $SPARK_HOME
+ENV PATH=${SPARK_HOME}/bin:${PATH}
+
+RUN rm $SPARK_HOME/jars/commons-beanutils-1.*
+
+ADD http://central.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar $SPARK_HOME/jars/
+ADD http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar $SPARK_HOME/jars/
+ADD http://central.maven.org/maven2/commons-beanutils/commons-beanutils/1.9.2/commons-beanutils-1.9.2.jar $SPARK_HOME/jars/
 
 # Never prompts the user for choices on installation/configuration of packages
 ENV DEBIAN_FRONTEND noninteractive
