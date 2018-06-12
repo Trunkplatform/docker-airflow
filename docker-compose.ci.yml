@@ -7,7 +7,7 @@ services:
       curl -L 'http://j.mp/build-scripts' | tar xvz && \
       cd scripts && \
       bundle install --gemfile ./Gemfile --path /tmp/bundle/ && \
-      rake rancher:downtime_deploy[${RANCHER_SERVICE_NAME},${RANCHER_ENV},1.${GO_PIPELINE_COUNTER}]"
+      bundle exec rake rancher:downtime_deploy[${RANCHER_SERVICE_NAME},${RANCHER_ENV},1.${GO_PIPELINE_COUNTER}]"
     environment:
       - GO_PIPELINE_COUNTER
       - RANCHER_ACCESS_KEY
