@@ -61,6 +61,7 @@ RUN pip install Cython pytz pyOpenSSL ndg-httpsclient pyasn1 \
 COPY requirements.txt /requirements.txt
 
 RUN pip install --no-cache -r /requirements.txt
+RUN python -m nltk.downloader punkt
 RUN rm -rf /root/.cache && apt-get autoclean && apt-get clean
 
 COPY script/entrypoint.sh /entrypoint.sh
