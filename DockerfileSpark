@@ -5,7 +5,7 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 # FROM python:3.6-slim
-FROM bde2020/spark-base:2.2.0-hadoop2.7
+FROM bde2020/spark-base:2.2.1-hadoop2.7
 MAINTAINER Puckel_
 
 ENV SPARK_VERSION=2.2.0
