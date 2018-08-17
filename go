@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export TAG=1.${GO_PIPELINE_COUNTER}
+export TAG=${GO_PIPELINE_LABEL}
 export DOCKERFILE=DockerfileSpark
 export ARTIFACT=/ailohq/airflow-pyspark
 
