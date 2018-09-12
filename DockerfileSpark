@@ -5,19 +5,24 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 # FROM python:3.6-slim
-FROM bde2020/spark-base:2.2.1-hadoop2.7
-MAINTAINER Puckel_
+FROM java:8
+
+MAINTAINER Mitchell Yuwono <mitchell@trunkplatform.com>
 
 ENV SPARK_VERSION=2.2.1
+ENV HADOOP_VERSION=2.8.4
+
 ENV SPARK_HOME=/usr/spark-$SPARK_VERSION
-RUN mv /spark $SPARK_HOME
+ADD spark-${SPARK_VERSION}-bin-hadoop-${HADOOP_VERSION}.tgz /
+RUN mv /spark-${SPARK_VERSION}-bin-hadoop-${HADOOP_VERSION} $SPARK_HOME
 ENV PATH=${SPARK_HOME}/bin:${PATH}
 
 RUN rm $SPARK_HOME/jars/commons-beanutils-1.*
 
 ADD https://jdbc.postgresql.org/download/postgresql-9.4-1202.jdbc41.jar $SPARK_HOME/jars/
-ADD http://central.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar $SPARK_HOME/jars/
-ADD http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar $SPARK_HOME/jars/
+ADD http://central.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.10.6/aws-java-sdk-s3-1.10.6.jar $SPARK_HOME/jars/
+ADD http://central.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.10.6/aws-java-sdk-core-1.10.6.jar $SPARK_HOME/jars/
+ADD http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.8.4/hadoop-aws-2.8.4.jar $SPARK_HOME/jars/
 ADD http://central.maven.org/maven2/commons-beanutils/commons-beanutils/1.9.2/commons-beanutils-1.9.2.jar $SPARK_HOME/jars/
 
 RUN chmod +r $SPARK_HOME/jars/*
