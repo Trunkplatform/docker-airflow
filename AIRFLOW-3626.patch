@@ -1,0 +1,30 @@
+--- /usr/miniconda3/lib/python3.6/site-packages/airflow/models/__init__.py	2019-05-01 05:56:13.000000000 +0000
++++ /tmp/__init__.py	2019-05-01 23:16:53.155686000 +0000
+@@ -549,6 +549,19 @@
+                         del self.dags[subdag.dag_id]
+             raise cycle_exception
+
++    def correct_maybe_zipped(self, fileloc):
++         """
++         If the path contains a folder with a .zip suffix, then
++         the folder is treated as a zip archive and path to zip is returned.
++         """
++
++         _, archive, filename = re.search(
++             r'((.*\.zip){})?(.*)'.format(re.escape(os.sep)), fileloc).groups()
++         if archive and zipfile.is_zipfile(archive):
++             return archive
++         else:
++             return fileloc
++
+     def collect_dags(
+             self,
+             dag_folder=None,
+@@ -574,6 +587,7 @@
+         stats = []
+         FileLoadStat = namedtuple(
+             'FileLoadStat', "file duration dag_num task_num dags")
++        dag_folder = self.correct_maybe_zipped(dag_folder)
+
+         for filepath in list_py_file_paths(dag_folder, safe_mode=safe_mode,
+                                            include_examples=include_examples):
