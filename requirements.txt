@@ -1,3 +1,4 @@
+websocket-client >=0.35, <0.55.0
 Flask-Login >= 0.2.11
 Flask-OAuthlib >= 0.9.4
 github3.py >= 0.9.6
@@ -32,4 +33,3 @@ nltk==3.3.0
 pyquibase>=1.2
 prometheus_client>=0.3.1
 redis>=2.10.5,<3
-websocket-client >=0.35, <0.55.0
