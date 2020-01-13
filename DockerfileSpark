@@ -63,6 +63,8 @@ ENV PYSPARK_DRIVER_PYTHON=$CONDA_HOME/bin/python
 ENV PYSPARK_PYTHON=$CONDA_HOME/bin/python
 RUN conda update -y conda && conda install -y python=3.6
 RUN conda install matplotlib
+conda install -c conda-forge geopandas
+RUN conda install -c conda-forge fiona
 RUN conda install -c conda-forge pyarrow==0.14.1
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.4-src.zip
 RUN pip install pytz pyOpenSSL ndg-httpsclient pyasn1 virtualenv Flask==1.0.4 dask[dataframe]==2.3.0 boto3==1.9.240 \
