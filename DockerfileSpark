@@ -55,7 +55,7 @@ RUN apt-get update && \
 
 ADD https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh miniconda3.sh
 
-RUN apt-get update && apt-get install -y python-dev gcc libspatialindex-dev
+RUN apt-get update && apt-get install -y python-dev gcc libspatialindex-dev binutils libproj-dev gdal-bin
 
 RUN bash miniconda3.sh -p $CONDA_HOME -b && rm miniconda3.sh
 ENV PATH=${CONDA_HOME}/bin:${PATH}
