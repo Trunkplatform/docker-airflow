@@ -70,7 +70,7 @@ RUN conda install -c conda-forge geopandas
 
 RUN conda install -c conda-forge pyarrow==0.14.1
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.4-src.zip
-RUN pip install pytz pyOpenSSL ndg-httpsclient pyasn1 virtualenv Flask==1.1.0 dask[dataframe]==2.3.0 boto3==1.9.240 jinja2==2.10.1 kombu==4.6.8 \
+RUN pip install pytz pyOpenSSL ndg-httpsclient pyasn1 virtualenv Flask==1.1.0 dask[dataframe]==2.3.0 boto3==1.9.240 jinja2==2.10.1 kombu==4.6.8 pandas==0.23.0 \
     apache-airflow[crypto,celery,postgres,hive,jdbc,slack,github_enterprise,ssh]==$AIRFLOW_VERSION
 
 COPY AIRFLOW-3626.patch /AIRFLOW-3626.patch
